@@ -8,10 +8,10 @@ int main(int argc, char *argv[]) {
  /*
   * Definitions
   */
-  const char* syncFlag;
-  const char* cleanFlag;
+  unsigned int syncFlag;
+  unsigned int cleanFlag;
   unsigned int cpus;
-  unsigned int jobs;
+  const char* jobs;
   const char* device;
   char* sync = "repo sync -j";
   char* repoSync;
