@@ -7,21 +7,21 @@ int main(int argc, char *argv[]) {
  /*
   * Definitions
   */
-  unsigned int sync;
-  unsigned int clean;
+  unsigned int syncFlag;
+  unsigned int cleanFlag;
   unsigned int cpus;
   unsigned int jobs;
   const char* device;
-  const char* repo = "repo sync -j";
-  const char* repoSync;
-  const char* clean = "make clean -j";
-  const char* makeClean;
-  const char* envsetup = "bash build/envsetup.sh";
-  const char* and = " && ";
-  const char* lunch = "lunch ";
-  const char* user = "-userdebug";
-  const char* make = "make otapackage -j"
-  const char* build;
+  char* sync = "repo sync -j";
+  char* repoSync;
+  char* clean = "make clean -j";
+  char* makeClean;
+  char* envsetup = "bash build/envsetup.sh";
+  char* and = " && ";
+  char* lunch = "lunch ";
+  char* user = "-userdebug";
+  char* make = "make otapackage -j";
+  char* build;
 
  /*
   * Argument Handling.
@@ -38,14 +38,14 @@ int main(int argc, char *argv[]) {
      exit(1);
   }
   if( argv[2] == '-s' || argv[3] == '-s' ) {
-     sync = 1;
+     syncFlag = 1;
   } else { 
-     sync = 0;
+     syncFlag = 0;
   }
   if( argv[2] == '-c' || argv[3] == '-c' ) {
-     clean = 1;
+     cleanFlag = 1;
   } else { 
-     clean = 0;
+     cleanFlag = 0;
   }
   device = argv[1];
   
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
   jobs = ((( cpus / 2 ) + 1 ) * 2 );
   
   if( sync = 1 ) {
-     strcpy(repoSync, repo);
+     strcpy(repoSync, sync);
      strcat(repoSync, jobs);
      system(repoSync);
   }
@@ -76,5 +76,6 @@ int main(int argc, char *argv[]) {
   strcat(build, user);
   strcat(build, and);
   strcat(build, make);
+  strcat(build, jobs);
   system(build);
 }
