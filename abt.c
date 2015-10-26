@@ -12,7 +12,6 @@ int main(int argc, char *argv[]) {
   unsigned int cleanFlag;
   unsigned int customCleanFlag;
   unsigned int cpus;
-  char* jobs;
   char* device;
   char* sync = "repo sync -j";
   char* repoSync;
@@ -72,11 +71,10 @@ int main(int argc, char *argv[]) {
   * Sync and Clean
   */
   cpus = sysconf( _SC_NPROCESSORS_ONLN );
-  jobs = ((( cpus / 2 ) + 1 ) * 2 );
   
   if( syncFlag == 1 ) {
      strcpy(repoSync, sync);
-     strcat(repoSync, jobs);
+     strcat(repoSync, cpus);
      system(repoSync);
   }
   if( cleanFlag == 1 || customCleanFlag == 1 ) {
@@ -96,6 +94,6 @@ int main(int argc, char *argv[]) {
   strcat(build, and);
   strcat(build, make);
   strcat(build, buildCommand);
-  strcat(build, jobs);
+  strcat(build, cpus);
   system(build);
 }
