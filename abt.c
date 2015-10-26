@@ -8,8 +8,8 @@ int main(int argc, char *argv[]) {
  /*
   * Definitions
   */
-  unsigned int syncFlag;
-  unsigned int cleanFlag;
+  const char* syncFlag;
+  const char* cleanFlag;
   unsigned int cpus;
   unsigned int jobs;
   const char* device;
