@@ -20,7 +20,7 @@ clean:
 abt: 
 	@echo "Compiling..." $<
 	@echo "" $<
-	@$(local_cc) abt.c -O3 -g0 -Wno-unused-result $(local_flags) -o abt $<
+	@$(local_cc) abt.c -O3 -g0 -Wno-unused-result -Wno-multichar $(local_flags) -o abt $<
 	@echo "Done! Final Binary: ./abt" $<
   
 debug: 
