@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
   unsigned int customCleanFlag;
   unsigned int cpus;
   char* device;
-  char* sync = "repo sync -j";
+  char* ssync = "repo sync -j";
   char* repoSync;
   char* make = "make ";
   char* clean;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
   cpus = sysconf( _SC_NPROCESSORS_ONLN );
   
   if( syncFlag == 1 ) {
-     strcpy(repoSync, sync);
+     strcpy(repoSync, ssync);
      strcat(repoSync, cpus);
      system(repoSync);
   }
