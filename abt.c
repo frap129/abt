@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   char* clean;
   char* makeClean;
   char* envsetup = "bash build/envsetup.sh";
-  char* and = " && ";
+  char* andand = " && ";
   char* lunch = "lunch ";
   char* user = "-userdebug";
   char* buildCommand = "otapackage -j";
@@ -87,11 +87,11 @@ int main(int argc, char *argv[]) {
   * Start build
   */
   strcpy(build, envsetup);
-  strcat(build, and);
+  strcat(build, andand);
   strcat(build, lunch);
   strcat(build, device);
   strcat(build, user);
-  strcat(build, and);
+  strcat(build, andand);
   strcat(build, make);
   strcat(build, buildCommand);
   strcat(build, cpus);
