@@ -8,25 +8,25 @@ int main(int argc, char *argv[]) {
  /*
   * Definitions
   */
-  unsigned int syncFlag;
-  unsigned int cleanFlag;
-  unsigned int customCleanFlag;
-  unsigned int cpus;
+  int syncFlag;
+  int cleanFlag;
+  int customCleanFlag;
+  int cpus;
   char* device;
-  char* ssync = "repo sync -j";
+  const char* ssync = "repo sync -j";
   char* repoSync;
-  char* make = "make ";
+  const char* make = "make ";
   char* clean;
   char* makeClean;
-  char* envsetup = "bash build/envsetup.sh";
+  const char* envsetup = "bash build/envsetup.sh";
   char* andand = " && ";
   char* lunch = "lunch ";
-  char* user = "-userdebug";
-  char* buildCommand = "otapackage -j";
+  const char* user = "-userdebug";
+  const char* buildCommand = "otapackage -j";
   char* build;
 
  /*
-  * Argument Handling.
+  * Argument Handling
   */
   if( argc == 1 ) {
      printf("Usage: abt device_name [OPTIONS]\n");
@@ -41,16 +41,16 @@ int main(int argc, char *argv[]) {
      printf("         -e [TARGET] = Custom clean command.\n");
      exit(1);
   }
-  
+
   device = argv[1];
   if( argv[2] == '-s' || argv[3] == '-s' || argv[4] == '-s' || argv[5] == '-s' ) {
      syncFlag = 1;
-  } else { 
+  } else {
      syncFlag = 0;
   }
   if( argv[2] == '-c' || argv[3] == '-c' || argv[4] == '-c' || argv[5] == '-c' ) {
      cleanFlag = 1;
-  } else { 
+  } else {
      cleanFlag = 0;
   }
   if( argv[2] == '-e' ) {
@@ -66,12 +66,12 @@ int main(int argc, char *argv[]) {
      customCleanFlag = 0;
      clean = "clean";
   }
-  
+
  /*
   * Sync and Clean
   */
   cpus = sysconf( _SC_NPROCESSORS_ONLN );
-  
+
   if( syncFlag == 1 ) {
      strcpy(repoSync, ssync);
      strcat(repoSync, cpus);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
      strcat(makeClean, clean);
      system(makeClean);
   }
-  
+
  /*
   * Start build
   */
