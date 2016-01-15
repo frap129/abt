@@ -1,0 +1,90 @@
+#!/bin/bash
+# Copyright (C) 2016 Joe Maples <joe@frap129.org>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+#   You may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+# Define help command
+help () {
+echo "Usage: abt [OPTIONS]"
+echo ""
+echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to bacon"
+echo "         -cTARGET    Clean target. ex. -cclobber. Default does not clean"
+echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
+echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
+echo "         -h          Show this menu."
+exit 1;
+}
+
+# Make sure local variables aren't set
+unset buildflag
+unset cleanflag
+unset deviceflag
+unset jobsflag
+
+while getopts 'b:c:d:j:h' flag; do
+  case "${flag}" in
+    b) buildflag="${OPTARG}" ;;
+    c) cleanflag="${OPTARG} ;;
+    d) deviceflag="${OPTARG}" ;;
+    j) jobsflag="${OPTARG} ;;
+    h) help ;;
+    *) error "Unknown option ${flag}. Run $O -h for help" ;;
+  esac
+done
+
+# Set build target
+if [ -z "$buildflag" ]; then
+  buildcmd="bacon"
+else
+  buildcmd="$buildflag"
+fi;
+
+# Set clean target
+if ! [ -z "cleanflag" ]; then
+  cleancmd="make $cleanflag"
+fi;
+
+# Set device target
+if [ -z "$deviceflag" ]; then
+  if ! [ -e device.abt ]; then
+    echo "ERROR: No device specified"
+    echo ""
+    help
+  else
+    devicename="$(cat device.abt)"
+  fi;
+else
+  devicename="$deviceflag"
+fi;
+
+# Set make jobs
+if [ -z "$jobsflag" ]; then
+  jobs="$(grep -c ^processor /proc/cpuinfo)"
+  makejobs="-j$jobs"
+else
+  makejobs="-j$jobsflag"
+fi;
+
+# Build
+echo "Lunching Device..."
+.build/envsetup.sh && lunch $devicename
+if ! [ -z "$cleancmd" ]; then
+  echo "Cleaning previous build..."
+  $cleancmd
+fi;
+echo "Starting build..."
+if ! time make $buildcmd $makejobs; then
+  echo "Build failed!"
+else
+ echo "Wooooohoooo! Build completed!"
+fi;
