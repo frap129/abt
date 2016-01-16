@@ -85,20 +85,20 @@ if [ "$syncflag" == "true" ]; then
   echo "Syncing sources..."
   repo sync $makejobs -f --force-sync -c;
 fi;
-echo "Lunching Device..."
-. build/envsetup.sh && lunch $devicename
+echo "Lunching device..."
+. build/envsetup.sh &> /dev/null && lunch $devicename &> /dev/null
 if [ -n "$cleantrue" ]; then
   echo "Cleaning previous build..."
-  if [ -n "$cleanflag" ]
-    make $cleancmd
+  if [ -n "$cleanflag" ]; then
+    make $cleancmd &> /dev/null
   else
-    make clean
+    make clean &> /dev/null
   fi;
 fi;
 if [ "$prebuildflag" == "true" ]; then
   before-build="$(cat prebuild.abt)"
   echo "Running prebuild commands..."
-  before-build
+  before-build &> /dev/null
 fi;
 echo "Starting build..."
 if ! time make $buildcmd $makejobs; then
@@ -107,7 +107,7 @@ else
   if [ "$postbuildflag" == "true" ]; then
     after-build="$(cat postbuild.abt)"
     echo "Running postbuild commands..."
-    after-build
+    after-build &> /dev/null
   fi;
  echo "Wooooohoooo! Build completed!"
 fi;
