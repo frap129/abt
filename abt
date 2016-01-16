@@ -18,19 +18,20 @@ help () {
 echo "Usage: abt [OPTIONS]"
 echo ""
 echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to bacon"
-echo "         -cTARGET    Clean target. ex. -cclobber. Default does not clean"
+echo "         -c[TARGET]  Clean before build. Default target is clean, but can be set. ex. -cclobber "
 echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
 echo "         -s          Sync sources before starting build. Defaults to false"
-echo "         -pFILE      Run commands specified in prebuild.abt before build."
-echo "         -aFILE      Run commands specified in postbuild.abt after build."
-echo "         -h          Show this menu."
+echo "         -p          Run commands specified in prebuild.abt before build"
+echo "         -a          Run commands specified in postbuild.abt after build"
+echo "         -h          Show this menu"
 exit 1;
 }
 
 # Make sure local variables aren't set
 unset buildflag
 unset cleanflag
+unset cleantrue
 unset deviceflag
 unset jobsflag
 unset prebuildflag
@@ -40,7 +41,7 @@ unset syncflag
 while getopts 'b:c:d:j:p:a:s:h' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
-    c) cleanflag="${OPTARG}" ;;
+    c) cleanflag="${OPTARG}" && cleantrue="true" ;;
     d) deviceflag="${OPTARG}" ;;
     j) jobsflag="${OPTARG}" ;;
     p) prebuildflag="true" ;;
@@ -58,14 +59,9 @@ else
   buildcmd="$buildflag"
 fi;
 
-# Set clean target
-if ! [ -z "cleanflag" ]; then
-  cleancmd="make $cleanflag"
-fi;
-
 # Set device target
 if [ -z "$deviceflag" ]; then
-  if ! [ -e device.abt ]; then
+  if [ ! -e device.abt ]; then
     echo "ERROR: No device specified"
     echo ""
     help
@@ -90,10 +86,14 @@ if [ "$syncflag" == "true" ]; then
   repo sync $makejobs -f --force-sync -c;
 fi;
 echo "Lunching Device..."
-.build/envsetup.sh && lunch $devicename
-if ! [ -z "$cleancmd" ]; then
+. build/envsetup.sh && lunch $devicename
+if [ -n "$cleantrue" ]; then
   echo "Cleaning previous build..."
-  $cleancmd
+  if [ -n "$cleanflag" ]
+    make $cleancmd
+  else
+    make clean
+  fi;
 fi;
 if [ "$prebuildflag" == "true" ]; then
   before-build="$(cat prebuild.abt)"
@@ -107,10 +107,7 @@ else
   if [ "$postbuildflag" == "true" ]; then
     after-build="$(cat postbuild.abt)"
     echo "Running postbuild commands..."
-    if ! after-build
-      echo "Postbuild commands failed!"
-      exit 1;
-    fi;
+    after-build
   fi;
  echo "Wooooohoooo! Build completed!"
 fi;
