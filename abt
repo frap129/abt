@@ -22,6 +22,7 @@ echo "         -cTARGET    Clean target. ex. -cclobber. Default does not clean"
 echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
 echo "         -pFILE      Run commands specified in prebuild.abt before build."
+echo "         -aFILE      Run commands specified in postbuild.abt after build."
 echo "         -h          Show this menu."
 exit 1;
 }
@@ -33,13 +34,14 @@ unset deviceflag
 unset jobsflag
 unset prebuildflag
 
-while getopts 'b:c:d:j:p:h' flag; do
+while getopts 'b:c:d:j:p:a:h' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
     c) cleanflag="${OPTARG}" ;;
     d) deviceflag="${OPTARG}" ;;
     j) jobsflag="${OPTARG}" ;;
     p) prebuildflag="true" ;;
+    a) postbuildflag="true" ;;
     h) help ;;
     *) error "Unknown option ${flag}. Run $O -h for help" ;;
   esac
@@ -94,5 +96,13 @@ echo "Starting build..."
 if ! time make $buildcmd $makejobs; then
   echo "Build failed!"
 else
+  if [ "$postbuildflag" == "true" ]; then
+    after-build="$(cat postbuild.abt)"
+    echo "Running postbuild commands..."
+    if ! after-build
+      echo "Postbuild commands failed!"
+      exit 1;
+    fi;
+  fi;
  echo "Wooooohoooo! Build completed!"
 fi;
