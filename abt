@@ -38,7 +38,7 @@ unset prebuildflag
 unset postbuildflag
 unset syncflag
 
-while getopts 'b:c:d:j:p:a:s:h' flag; do
+while getopts 'b:c:d:j:pash' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
     c) cleanflag="${OPTARG}" && cleantrue="true" ;;
