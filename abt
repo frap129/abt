@@ -21,6 +21,7 @@ echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to bacon"
 echo "         -cTARGET    Clean target. ex. -cclobber. Default does not clean"
 echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
+echo "         -s          Sync sources before starting build. Defaults to false"
 echo "         -pFILE      Run commands specified in prebuild.abt before build."
 echo "         -aFILE      Run commands specified in postbuild.abt after build."
 echo "         -h          Show this menu."
@@ -33,8 +34,10 @@ unset cleanflag
 unset deviceflag
 unset jobsflag
 unset prebuildflag
+unset postbuildflag
+unset syncflag
 
-while getopts 'b:c:d:j:p:a:h' flag; do
+while getopts 'b:c:d:j:p:a:s:h' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
     c) cleanflag="${OPTARG}" ;;
@@ -42,6 +45,7 @@ while getopts 'b:c:d:j:p:a:h' flag; do
     j) jobsflag="${OPTARG}" ;;
     p) prebuildflag="true" ;;
     a) postbuildflag="true" ;;
+    s) syncflag="true" ;;
     h) help ;;
     *) error "Unknown option ${flag}. Run $O -h for help" ;;
   esac
@@ -81,6 +85,10 @@ else
 fi;
 
 # Build
+if [ "$syncflag" == "true" ]; then
+  echo "Syncing sources..."
+  repo sync $makejobs -f --force-sync -c;
+fi;
 echo "Lunching Device..."
 .build/envsetup.sh && lunch $devicename
 if ! [ -z "$cleancmd" ]; then
