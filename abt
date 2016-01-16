@@ -13,6 +13,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# Define color values
+red=$(tput setaf 1) # red
+grn=$(tput setaf 2) # green
+blu=$(tput setaf 4) # blue
+cya=$(tput setaf 6) # cyan
+txtbld=$(tput bold) # bold
+bldred=${txtbld}$(tput setaf 1) # red
+bldgrn=${txtbld}$(tput setaf 2) # green
+bldblu=${txtbld}$(tput setaf 4) # blue
+bldcya=${txtbld}$(tput setaf 6) # cyan
+txtrst=$(tput sgr0) # reset
+
 # Define help command
 help () {
 echo "Usage: abt [OPTIONS]"
@@ -48,7 +60,7 @@ while getopts 'b:c:d:j:pash' flag; do
     a) postbuildflag="true" ;;
     s) syncflag="true" ;;
     h) help ;;
-    *) error "Unknown option ${flag}. Run $O -h for help" ;;
+    *) error "${bldred}Unknown option ${flag}. Run $O -h for help${txtrst}" ;;
   esac
 done
 
@@ -62,7 +74,7 @@ fi;
 # Set device target
 if [ -z "$deviceflag" ]; then
   if [ ! -e device.abt ]; then
-    echo "ERROR: No device specified"
+    echo "${bldred}ERROR:${txtrst}${red} No device specified${txtrst}"
     echo ""
     help
   else
@@ -82,13 +94,13 @@ fi;
 
 # Build
 if [ "$syncflag" == "true" ]; then
-  echo "Syncing sources..."
+  echo "${cya}Syncing sources...${txtrst}"
   repo sync $makejobs -f --force-sync -c;
 fi;
-echo "Lunching device..."
+echo "${cya}Lunching device...${txtrst}"
 . build/envsetup.sh &> /dev/null && lunch $devicename &> /dev/null
 if [ -n "$cleantrue" ]; then
-  echo "Cleaning previous build..."
+  echo "${cya}Cleaning previous build...${txtrst}"
   if [ -n "$cleanflag" ]; then
     make $cleancmd &> /dev/null
   else
@@ -97,17 +109,17 @@ if [ -n "$cleantrue" ]; then
 fi;
 if [ "$prebuildflag" == "true" ]; then
   before-build="$(cat prebuild.abt)"
-  echo "Running prebuild commands..."
+  echo "${cya}Running prebuild commands...${txtrst}"
   before-build &> /dev/null
 fi;
-echo "Starting build..."
+echo "${cya}Starting build...${txtrst}"
 if ! time make $buildcmd $makejobs; then
-  echo "Build failed!"
+  echo "${bldred}Build failed!${txtrst}"
 else
   if [ "$postbuildflag" == "true" ]; then
     after-build="$(cat postbuild.abt)"
-    echo "Running postbuild commands..."
+    echo "${cya}Running postbuild commands...${txtrst}"
     after-build &> /dev/null
   fi;
- echo "Wooooohoooo! Build completed!"
+ echo "${grn}Wooooohoooo! Build completed!${txtrst}"
 fi;
