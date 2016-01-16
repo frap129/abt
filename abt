@@ -21,6 +21,7 @@ echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to bacon"
 echo "         -cTARGET    Clean target. ex. -cclobber. Default does not clean"
 echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
+echo "         -pFILE      Run commands specified in prebuild.abt before build."
 echo "         -h          Show this menu."
 exit 1;
 }
@@ -30,13 +31,15 @@ unset buildflag
 unset cleanflag
 unset deviceflag
 unset jobsflag
+unset prebuildflag
 
-while getopts 'b:c:d:j:h' flag; do
+while getopts 'b:c:d:j:p:h' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
-    c) cleanflag="${OPTARG} ;;
+    c) cleanflag="${OPTARG}" ;;
     d) deviceflag="${OPTARG}" ;;
-    j) jobsflag="${OPTARG} ;;
+    j) jobsflag="${OPTARG}" ;;
+    p) prebuildflag="true" ;;
     h) help ;;
     *) error "Unknown option ${flag}. Run $O -h for help" ;;
   esac
@@ -81,6 +84,11 @@ echo "Lunching Device..."
 if ! [ -z "$cleancmd" ]; then
   echo "Cleaning previous build..."
   $cleancmd
+fi;
+if [ "$prebuildflag" == "true" ]; then
+  before-build="$(cat prebuild.abt)"
+  echo "Running prebuild commands..."
+  before-build
 fi;
 echo "Starting build..."
 if ! time make $buildcmd $makejobs; then
