@@ -29,7 +29,7 @@ txtrst=$(tput sgr0) # reset
 help () {
 echo "Usage: abt [OPTIONS]"
 echo ""
-echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to bacon"
+echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to otapackage"
 echo "         -c[TARGET]  Clean before build. Default target is clean, but can be set. ex. -cclobber "
 echo "         -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
@@ -66,7 +66,7 @@ done
 
 # Set build target
 if [ -z "$buildflag" ]; then
-  buildcmd="bacon"
+  buildcmd="otapackage"
 else
   buildcmd="$buildflag"
 fi;
