@@ -14,8 +14,8 @@ How do I use abt?
 Usage: abt [OPTIONS]
 
 OPTIONS:  
--bTARGET    Build target. ex. -botapackage. Defaults to bacon  
-         -c[TARGET]  Clean before build. Default target is clean, but can be set. ex. -cclobber   
+-bTARGET    Build target. ex. -botapackage. Defaults to otapackage  
+         -c[TARGET]  Clean before build, target is optional.   
          -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot  
          -jJOBS      Number of threads to use. Auto calculates if not set  
          -s          Sync sources before starting build. Defaults to false  
