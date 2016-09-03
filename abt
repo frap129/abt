@@ -66,7 +66,11 @@ done
 
 # Set build target
 if [ -z "$buildflag" ]; then
-  buildcmd="otapackage"
+  if [ ! -e build.abt ]; then
+    buildcmd="otapackage"
+  else
+    buildcmd="$(cat build.abt)"
+  fi;
 else
   buildcmd="$buildflag"
 fi;
