@@ -64,12 +64,16 @@ while getopts 'b:c:d:j:pash' flag; do
   esac
 done
 
+if [ -d .abt ]; then
+  mkdir .abt
+fi;
+
 # Set build target
 if [ -z "$buildflag" ]; then
-  if [ ! -e build.abt ]; then
+  if [ ! -e .abt/build.abt ]; then
     buildcmd="otapackage"
   else
-    buildcmd="$(cat build.abt)"
+    buildcmd="$(cat .abt/build.abt)"
   fi;
 else
   buildcmd="$buildflag"
@@ -77,12 +81,12 @@ fi;
 
 # Set device target
 if [ -z "$deviceflag" ]; then
-  if [ ! -e device.abt ]; then
+  if [ ! -e .abt/device.abt ]; then
     echo "${bldred}ERROR:${txtrst}${red} No device specified${txtrst}"
     echo ""
     help
   else
-    devicename="$(cat device.abt)"
+    devicename="$(cat .abt/device.abt)"
   fi;
 else
   devicename="$deviceflag"
@@ -112,7 +116,7 @@ if [ -n "$cleantrue" ]; then
   fi;
 fi;
 if [ "$prebuildflag" == "true" ]; then
-  before-build="$(cat prebuild.abt)"
+  before-build="$(cat .abt/prebuild.abt)"
   echo "${cya}Running prebuild commands...${txtrst}"
   before-build &> /dev/null
 fi;
@@ -121,7 +125,7 @@ if ! time make $buildcmd $makejobs; then
   echo "${bldred}Build failed!${txtrst}"
 else
   if [ "$postbuildflag" == "true" ]; then
-    after-build="$(cat postbuild.abt)"
+    after-build="$(cat .abt/postbuild.abt)"
     echo "${cya}Running postbuild commands...${txtrst}"
     after-build &> /dev/null
   fi;
