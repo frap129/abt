@@ -19,6 +19,4 @@ OPTIONS:
          -dTARGET    Device to lunch. ex. full_bacon-eng. Set default in device.abt in the chroot  
          -jJOBS      Number of threads to use. Auto calculates if not set  
          -s          Sync sources before starting build. Defaults to false  
-         -p          Run commands specified in prebuild.abt before build  
-         -a          Run commands specified in postbuild.abt after build  
          -h          Show this menu  
