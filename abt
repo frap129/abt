@@ -34,8 +34,6 @@ echo "         -c[TARGET]  Clean before build. Default target is clean, but can 
 echo "         -dTARGET    Device to lunch. ex. aosp_shamu-eng. Set default in device.abt in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
 echo "         -s          Sync sources before starting build. Defaults to false"
-echo "         -p          Run commands specified in prebuild.abt before build"
-echo "         -a          Run commands specified in postbuild.abt after build"
 echo "         -h          Show this menu"
 exit 1;
 }
@@ -46,18 +44,14 @@ unset cleanflag
 unset cleantrue
 unset deviceflag
 unset jobsflag
-unset prebuildflag
-unset postbuildflag
 unset syncflag
 
-while getopts 'b:c:d:j:pash' flag; do
+while getopts 'b:c:d:j:sh' flag; do
   case "${flag}" in
     b) buildflag="${OPTARG}" ;;
     c) cleanflag="${OPTARG}" && cleantrue="true" ;;
     d) deviceflag="${OPTARG}" ;;
     j) jobsflag="${OPTARG}" ;;
-    p) prebuildflag="true" ;;
-    a) postbuildflag="true" ;;
     s) syncflag="true" ;;
     h) help ;;
     *) error "${bldred}Unknown option ${flag}. Run $O -h for help${txtrst}" ;;
@@ -118,7 +112,7 @@ if [ -n "$cleantrue" ]; then
     make clean &> /dev/null
   fi;
 fi;
-if [ "$prebuildflag" == "true" ]; then
+if [ -e .abt/prebuild.abt ]; then
   before-build="$(cat .abt/prebuild.abt)"
   echo "${cya}Running prebuild commands...${txtrst}"
   before-build &> /dev/null
@@ -127,7 +121,7 @@ echo "${cya}Starting build...${txtrst}"
 if ! time make $buildcmd $makejobs; then
   echo "${bldred}Build failed!${txtrst}"
 else
-  if [ "$postbuildflag" == "true" ]; then
+  if [ -e .abt/postbuild.abt ]; then
     after-build="$(cat .abt/postbuild.abt)"
     echo "${cya}Running postbuild commands...${txtrst}"
     after-build &> /dev/null
