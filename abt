@@ -105,8 +105,11 @@ if [ "$syncflag" == "true" ]; then
   echo "${cya}Syncing sources...${txtrst}"
   repo sync $makejobs -f --force-sync -c;
 fi;
-echo "${cya}Lunching device...${txtrst}"
-. build/envsetup.sh &> /dev/null && lunch $devicename &> /dev/null
+if [ "$$" != "$(cat .abt/lunch.tmp)" ]; then
+  echo "$$" > .abt/lunch.tmp
+  echo "${cya}Lunching device...${txtrst}"
+  . build/envsetup.sh &> /dev/null && lunch $devicename &> /dev/null
+fi;
 if [ -n "$cleantrue" ]; then
   echo "${cya}Cleaning previous build...${txtrst}"
   if [ -n "$cleanflag" ]; then
