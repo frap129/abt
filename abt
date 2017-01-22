@@ -107,7 +107,7 @@ fi;
 if [ -n "$cleantrue" ]; then
   echo "${cya}Cleaning previous build...${txtrst}"
   if [ -n "$cleanflag" ]; then
-    make $cleancmd &> /dev/null
+    make $cleancmd $makejobs &> /dev/null
   else
     make clean &> /dev/null
   fi;
