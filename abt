@@ -31,7 +31,7 @@ echo "Usage: abt [OPTIONS]"
 echo ""
 echo "OPTIONS: -bTARGET    Build target. ex. -botapackage. Defaults to otapackage"
 echo "         -c[TARGET]  Clean before build. Default target is clean, but can be set. ex. -cclobber "
-echo "         -dTARGET    Device to lunch. ex. aosp_shamu-eng. Set default in device.abt in the chroot"
+echo "         -dTARGET    Device to lunch. ex. aosp_shamu-eng. Set default in .abt/config in the chroot"
 echo "         -jJOBS      Number of threads to use. Auto calculates if not set"
 echo "         -s          Sync sources before starting build. Defaults to false"
 echo "         -h          Show this menu"
@@ -62,12 +62,14 @@ if ! [ -d .abt ]; then
   mkdir .abt
 fi;
 
+source .abt/config
+
 # Set build target
 if [ -z "$buildflag" ]; then
-  if [ ! -e .abt/build.abt ]; then
+  if [ -z "$build" ]; then
     buildcmd="otapackage"
   else
-    buildcmd="$(cat .abt/build.abt)"
+    buildcmd="$build"
   fi;
 else
   buildcmd="$buildflag"
@@ -75,12 +77,12 @@ fi;
 
 # Set device target
 if [ -z "$deviceflag" ]; then
-  if [ ! -e .abt/device.abt ]; then
+  if [ -z "$device" ]; then
     echo "${bldred}ERROR:${txtrst}${red} No device specified${txtrst}"
     echo ""
     help
   else
-    devicename="$(cat .abt/device.abt)"
+    devicename="$device"
   fi;
 else
   devicename="$deviceflag"
@@ -112,8 +114,8 @@ if [ -n "$cleantrue" ]; then
     make clean &> /dev/null
   fi;
 fi;
-if [ -e .abt/prebuild.abt ]; then
-  before-build="$(cat .abt/prebuild.abt)"
+if [ ! -z "$prebuild" ]; then
+  before-build="$prebuild"
   echo "${cya}Running prebuild commands...${txtrst}"
   before-build &> /dev/null
 fi;
@@ -121,8 +123,8 @@ echo "${cya}Starting build...${txtrst}"
 if ! time make $buildcmd $makejobs; then
   echo "${bldred}Build failed!${txtrst}"
 else
-  if [ -e .abt/postbuild.abt ]; then
-    after-build="$(cat .abt/postbuild.abt)"
+  if [ ! -z "$postbuild" ]; then
+    after-build="$postbuild"
     echo "${cya}Running postbuild commands...${txtrst}"
     after-build &> /dev/null
   fi;
