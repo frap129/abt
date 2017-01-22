@@ -58,7 +58,7 @@ while getopts 'b:c:d:j:sh' flag; do
   esac
 done
 
-if [ -d .abt ]; then
+if ! [ -d .abt ]; then
   mkdir .abt
 fi;
 
